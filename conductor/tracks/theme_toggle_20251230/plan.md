@@ -1,7 +1,7 @@
 # Plan: Dark/Light Mode Theme Toggle
 
 ## Phase 1: Core Logic and State Management
-- [~] Task: Create unit tests for theme state management and local storage persistence.
+- [x] Task: Create unit tests for theme state management and local storage persistence. [0d5579f]
 - [ ] Task: Implement theme initialization logic (retrieve from local storage or default).
 - [ ] Task: Implement theme switching logic in Streamlit session state.
 - [ ] Task: Implement persistence logic to save theme selection to local storage.
