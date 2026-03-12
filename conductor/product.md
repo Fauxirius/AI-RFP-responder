@@ -18,7 +18,7 @@ RFP Genie streamlines the tedious Request for Proposal (RFP) response process by
 - **Gap Analysis:** Automated identification of missing information or compliance gaps between RFP requirements and the knowledge base.
 - **AI-Driven Generation:** Context-aware generation of response sections using Google's Generative AI.
 - **Export Capabilities:** Seamless export of generated responses to professional DOCX formats.
-- **Interactive UI:** A user-friendly Streamlit interface with a polished "Crystal Teal" visual theme.
+- **Interactive UI:** A user-friendly Streamlit interface with a polished "Crystal Teal" visual theme and built-in Dark/Light mode support.
 
 ## Success Metrics
 - Reduction in time spent per RFP response.

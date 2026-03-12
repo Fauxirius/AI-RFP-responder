@@ -4,10 +4,15 @@ from src.parser import extract_text_from_pdf, extract_text_from_docx, extract_te
 from src.generator import generate_section
 from src.analyzer import perform_gap_analysis
 from src.exporter import export_to_docx
+from src.theme_manager import ThemeManager
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
+
+# Theme Initialization
+theme_manager = ThemeManager()
+theme_manager.initialize_theme()
 
 # Page Config
 st.set_page_config(
@@ -18,45 +23,58 @@ st.set_page_config(
 )
 
 # Custom CSS for "Crystal Teal" look
-st.markdown("""
+if st.session_state.get('theme') == 'dark':
+    bg_gradient = "radial-gradient(circle at top left, #0f172a 0%, #020617 50%, #0f172a 100%)"
+    text_color = "#f8fafc"
+    card_bg = "rgba(30, 41, 59, 0.7)"
+    input_bg = "rgba(15, 23, 42, 0.8) !important"
+    sidebar_bg = "rgba(15, 23, 42, 0.4)"
+else:
+    bg_gradient = "radial-gradient(circle at top left, #f0fdfa 0%, #ffffff 50%, #f7fee7 100%)"
+    text_color = "#0f172a"
+    card_bg = "rgba(255, 255, 255, 0.7)"
+    input_bg = "rgba(255, 255, 255, 0.8) !important"
+    sidebar_bg = "rgba(255, 255, 255, 0.4)"
+
+st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
-    
+
     /* Global Reset & Page Background */
-    div.stApp {
-        background: radial-gradient(circle at top left, #f0fdfa 0%, #ffffff 50%, #f7fee7 100%); /* Teal-50 to Lime-50 */
-    }
-    
-    html, body, [class*="css"] {
+    div.stApp {{
+        background: {bg_gradient};
+    }}
+
+    html, body, [class*="css"] {{
         font-family: 'Plus Jakarta Sans', sans-serif;
-        color: #0f172a; /* Slate-900 */
-    }
-    
+        color: {text_color};
+    }}
+
     /* Headers with Teal Gradient */
-    h1, h2, h3 {
+    h1, h2, h3 {{
         font-weight: 700;
         letter-spacing: -0.025em;
         background: linear-gradient(135deg, #0f766e, #059669); /* Teal-700 to Emerald-600 */
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-    }
-    h1 {
+    }}
+    h1 {{
         background: linear-gradient(135deg, #14b8a6, #84cc16); /* Teal to Lime */
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         font-size: 2.5rem !important;
         padding-bottom: 0.5rem;
-    }
-    
+    }}
+
     /* Sidebar Styling */
-    section[data-testid="stSidebar"] {
-        background-color: rgba(255, 255, 255, 0.4);
-        border-right: 1px solid rgba(255, 255, 255, 0.5);
+    section[data-testid="stSidebar"] {{
+        background-color: {sidebar_bg};
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(10px);
-    }
-    
+    }}
+
     /* Button Styling - Ocean Gradient */
-    .stButton>button {
+    .stButton>button {{
         width: 100%;
         border-radius: 12px;
         height: 3.2em;
@@ -66,66 +84,74 @@ st.markdown("""
         font-weight: 600;
         box-shadow: 0 4px 14px rgba(20, 184, 166, 0.3);
         transition: all 0.3s ease;
-    }
-    
+    }}
+
     /* Hover Effects */
-    .stButton>button:hover {
+    .stButton>button:hover {{
         background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%); /* Teal-400 */
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(20, 184, 166, 0.4);
-    }
-    
+    }}
+
     /* Cards - Glassmorphism */
-    .stExpander {
+    .stExpander {{
         border: 1px solid rgba(20, 184, 166, 0.1);
         border-radius: 16px;
-        background: rgba(255, 255, 255, 0.7);
+        background: {card_bg};
         backdrop-filter: blur(12px);
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
         margin-bottom: 1rem;
-    }
-    .stExpander:hover {
+    }}
+    .stExpander:hover {{
         border-color: #2dd4bf; /* Teal-400 */
         box-shadow: 0 10px 15px -3px rgba(20, 184, 166, 0.15);
-    }
-    
+    }}
+
     /* Inputs */
-    input, textarea, .stSelectbox > div > div {
-        background-color: rgba(255, 255, 255, 0.8) !important;
+    input, textarea, .stSelectbox > div > div {{
+        background-color: {input_bg};
         border: 1px solid #ccfbf1 !important; /* Teal-100 */
         border-radius: 10px !important;
-        color: #0f172a !important;
-    }
-    input:focus, textarea:focus {
-        background-color: #ffffff !important;
+        color: {text_color} !important;
+    }}
+    input:focus, textarea:focus {{
+        background-color: transparent !important;
         border-color: #14b8a6 !important;
         box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2) !important;
-    }
-    
+    }}
+
     /* Upload Zone */
-    div[data-testid="stFileUploader"] {
-        background-color: rgba(240, 253, 250, 0.5); /* Teal-50 */
+    div[data-testid="stFileUploader"] {{
+        background-color: rgba(240, 253, 250, 0.05);
         border: 2px dashed #99f6e4;
         border-radius: 16px;
-        color: #0f766e;
-    }
+        color: #14b8a6;
+    }}
 
     /* Metric */
-    div[data-testid="metric-container"] {
-        background: linear-gradient(135deg, #ffffff, #f0fdfa);
+    div[data-testid="metric-container"] {{
+        background: {card_bg};
         border: 1px solid #ccfbf1;
         border-radius: 12px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
+    }}
 </style>
 """, unsafe_allow_html=True)
-
 # Application Header
-col1, col2 = st.columns([1, 12])
+col1, col2, col3 = st.columns([1, 10, 1])
 with col1:
     st.image("https://cdn-icons-png.flaticon.com/512/8654/8654272.png", width=60) # Teal icon
 with col2:
     st.title("Proposal Studio")
+with col3:
+    if st.session_state.get('theme') == 'light':
+        if st.button("🌙", help="Switch to Dark Mode"):
+            theme_manager.set_theme('dark')
+            st.rerun()
+    else:
+        if st.button("☀️", help="Switch to Light Mode"):
+            theme_manager.set_theme('light')
+            st.rerun()
 st.markdown("---")
 
 # --- SIDEBAR: Global Context & Settings ---

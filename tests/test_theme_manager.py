@@ -12,6 +12,14 @@ class TestThemeManager(unittest.TestCase):
     def tearDown(self):
         self.patcher.stop()
 
+    def test_theme_initialization_from_local_storage(self):
+        """Test that theme initializes from local storage if available."""
+        manager = ThemeManager()
+        # Mocking local storage retrieval - we'll assume it returns 'dark'
+        with patch.object(manager, '_get_from_local_storage', return_value='dark'):
+            manager.initialize_theme()
+            self.assertEqual(st.session_state['theme'], 'dark')
+
     def test_default_theme_initialization(self):
         """Test that theme initializes to a default value if not set."""
         manager = ThemeManager()

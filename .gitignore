@@ -1,0 +1,28 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Python caches
+__pycache__/
+*.pyc
+
+# Project specific caches and reports
+.coverage
+.streamlit/
+
+# Knowledge Base (Prevents uploading business documents)
+knowledge_base/*
+!knowledge_base/.gitkeep
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS Data
+.DS_Store
+Thumbs.db
